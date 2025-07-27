@@ -11,6 +11,11 @@ function Slidezy(select, option = {}) {
       speed: 300,
       loop: false,
       nav: true,
+      control: true,
+      controlText: ["fa-solid fa-angle-left", "fa-solid fa-angle-right"],
+      prevButton: null,
+      nextButton: null,
+      slideBy:1
     },
     option
   );
@@ -26,7 +31,9 @@ Slidezy.prototype._init = function () {
 
   this._createContent();
   this._creatTrack();
-  this._createControl();
+  if (this.opt.control) {
+    this._createControl();
+  }
 
   if (this.opt.nav) {
     this._creatNav();
@@ -63,25 +70,33 @@ Slidezy.prototype._creatTrack = function () {
 };
 
 Slidezy.prototype._createControl = function () {
-  this.preBtn = document.createElement("button");
-  this.nextBtn = document.createElement("button");
+  // Nút Prev Button
+  this.preBtn = this.opt.prevButton
+    ? document.querySelector(this.opt.prevButton)
+    : document.createElement("button");
+   // Nút Next Button
+  this.nextBtn = this.opt.nextButton
+    ? document.querySelector(this.opt.nextButton)
+    : document.createElement("button");
 
-  this.preBtn.className = "pre-slide";
-  this.nextBtn.className = "next-slide";
-
-  this.iconPre = document.createElement("i");
-  this.iconNext = document.createElement("i");
-
-  this.iconPre.className = "fa-solid fa-angle-left";
-  this.iconNext.className = "fa-solid fa-angle-right";
-
-  this.preBtn.appendChild(this.iconPre);
-  this.nextBtn.appendChild(this.iconNext);
-
-  this.content.append(this.preBtn, this.nextBtn);
-
-  this.preBtn.onclick = () => this._moveSlide(-1);
-  this.nextBtn.onclick = () => this._moveSlide(1);
+  if (!this.opt.prevButton) {
+    this.preBtn.className = "pre-slide";
+    this.iconPre = document.createElement("i");
+    this.iconPre.className = this.opt.controlText[0];
+    this.preBtn.appendChild(this.iconPre);
+    this.content.append(this.preBtn);
+  }
+  if (!this.opt.nextButton) {
+    this.nextBtn.className = "next-slide";
+    this.iconNext = document.createElement("i");
+    this.iconNext.className = this.opt.controlText[1];
+    this.nextBtn.appendChild(this.iconNext);
+    this.content.append(this.nextBtn);
+  }
+ 
+  const stepSize = this.opt.slideBy === "page" ? this.opt.items : this.opt.slideBy;
+  this.preBtn.onclick = () => this._moveSlide(-stepSize);
+  this.nextBtn.onclick = () => this._moveSlide(stepSize);
 };
 
 Slidezy.prototype._moveSlide = function (step) {

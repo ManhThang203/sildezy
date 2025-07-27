@@ -25,15 +25,28 @@
       <div>Slide 5</div>
       <div>Slide 6</div>
     </div>
+    <!-- <div class="my-control">
+      <button class="slide-prev">
+        <i class="fa-solid fa-angle-left"></i>
+      </button>
+      <button class="slide-next">
+        <i class="fa-solid fa-angle-right"></i>
+      </button>
+    </div> -->
     <script src="./js/main.js"></script>
-  
+
     <script>
-        const mySlide = new Slidezy("#my-slide",{
-          items: 1,
-          speed:300,
-          loop:true,
-          nav:true
-        });
+      const mySlide = new Slidezy("#my-slide", {
+        items: 4,
+        speed: 300,
+        loop: true,
+        nav: true,
+        control:true,
+        /*controlText: ["fa-solid fa-angle-left","fa-solid fa-angle-right"],
+        prevButton: ".slide-prev",
+        nextButton: ".slide-next",*/
+        slideBy:3
+      });
     </script>
   </body>
 </html>
