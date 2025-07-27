@@ -15,7 +15,7 @@ function Slidezy(select, option = {}) {
       controlText: ["fa-solid fa-angle-left", "fa-solid fa-angle-right"],
       prevButton: null,
       nextButton: null,
-      slideBy:1
+      slideBy: 1,
     },
     option
   );
@@ -74,7 +74,7 @@ Slidezy.prototype._createControl = function () {
   this.preBtn = this.opt.prevButton
     ? document.querySelector(this.opt.prevButton)
     : document.createElement("button");
-   // Nút Next Button
+  // Nút Next Button
   this.nextBtn = this.opt.nextButton
     ? document.querySelector(this.opt.nextButton)
     : document.createElement("button");
@@ -93,8 +93,9 @@ Slidezy.prototype._createControl = function () {
     this.nextBtn.appendChild(this.iconNext);
     this.content.append(this.nextBtn);
   }
- 
-  const stepSize = this.opt.slideBy === "page" ? this.opt.items : this.opt.slideBy;
+
+  const stepSize =
+    this.opt.slideBy === "page" ? this.opt.items : this.opt.slideBy;
   this.preBtn.onclick = () => this._moveSlide(-stepSize);
   this.nextBtn.onclick = () => this._moveSlide(stepSize);
 };
@@ -109,8 +110,10 @@ Slidezy.prototype._moveSlide = function (step) {
 
   setTimeout(() => {
     if (this.opt.loop) {
-      if (this.currentIndex <= 0) {
-        this.currentIndex = maxIndex - this.opt.items;
+      if (this.currentIndex <= this.opt.items) {
+        const slideCouter = this._getSlideCount();
+
+        this.currentIndex += slideCouter;
         this._updatePosition(true);
       } else if (this.currentIndex >= maxIndex) {
         this.currentIndex = this.opt.items;
@@ -123,13 +126,16 @@ Slidezy.prototype._moveSlide = function (step) {
   this._updatePosition();
 };
 
+Slidezy.prototype._getSlideCount = function () {
+  return this.slides.length - (this.opt.loop ? this.opt.items * 2 : 0);
+};
+
 Slidezy.prototype._creatNav = function () {
   this.navWrapper = document.createElement("div");
   this.navWrapper.className = "slidezy-nav";
   // Nếu mà loop thì là số item * 2 mà khi loop (this.slides.length = 12)
   // lên trong đoạn này khi loop hay không loop thì đều là 6
-  const slideCouter =
-    this.slides.length - (this.opt.loop ? this.opt.items * 2 : 0);
+  const slideCouter = this._getSlideCount();
   // số trang sẽ bằng số slide chia số item hiển thị thì ra số page
   // làm tròn trên
   const pageCount = Math.ceil(slideCouter / this.opt.items);
