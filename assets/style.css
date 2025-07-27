@@ -11,7 +11,6 @@
 }
 .slide-track{
     display: flex;
-    transition: transform .4s ease;
 }
 .slide-item{
     flex:  0 0 auto;
@@ -37,6 +36,26 @@
 .slide-item:nth-child(6){
     background: blueviolet;
 }
+.slide-item:nth-child(7){
+    background: pink;
+}
+.slide-item:nth-child(8){
+    background: olivedrab;
+}
+
+.slide-item:nth-child(9){
+    background: violet;
+}
+.slide-item:nth-child(10){
+    background: red;
+}
+.slide-item:nth-child(11){
+    background: blueviolet;
+}
+.slide-item:nth-child(12){
+    background: green;
+}
+
 .pre-slide,
 .next-slide{
     position: absolute;

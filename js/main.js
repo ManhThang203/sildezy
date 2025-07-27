@@ -7,20 +7,20 @@ function Slidezy(select, option = {}) {
 
   this.opt = Object.assign(
     {
-      item: 1,
+      items: 1,
       loop: false,
     },
     option
   );
   this.slides = Array.from(this.container.children);
 
-  this.currentIndex = 0;
+  this.currentIndex = this.opt.loop ? this.opt.items : 0;
   this._init();
+  this._updatePosition();
 }
 
 Slidezy.prototype._init = function () {
   this.container.className = "slide-wrapper";
-  console.log(this.container);
 
   this._creatTrack();
   this._createNavigation();
@@ -30,9 +30,19 @@ Slidezy.prototype._creatTrack = function () {
   this.track = document.createElement("div");
   this.track.className = "slide-track";
 
+  const cloneHead = this.slides
+    .slice(-this.opt.items)
+    .map((node) => node.cloneNode(true));
+  const cloneTail = this.slides
+    .slice(0, this.opt.items)
+    .map((node) => node.cloneNode(true));
+
+  // 4 5 6 1 2 3 4 5 6 1 2 3
+
+  this.slides = cloneHead.concat(this.slides.concat(cloneTail));
   this.slides.forEach((slide) => {
     slide.className = "slide-item";
-    slide.style.flexBasis = `calc(100% / ${this.opt.item})`;
+    slide.style.flexBasis = `calc(100% / ${this.opt.items})`;
     this.track.appendChild(slide);
   });
   this.container.appendChild(this.track);
@@ -61,16 +71,40 @@ Slidezy.prototype._createNavigation = function () {
 };
 
 Slidezy.prototype._moveSlide = function (step) {
+  // nếu là true thì return
+  if (this._isAnimating) return;
+
+  this._isAnimating = true;
+  
   if (this.opt.loop) {
     this.currentIndex =
       (this.currentIndex + step + this.slides.length) % this.slides.length;
+
+    this.track.ontransitionend = () => {
+      const maxIndex = this.slides.length - this.opt.items;
+      if (this.currentIndex <= 0) {
+        this.currentIndex = maxIndex - this.opt.items;
+      }
+      else if(this.currentIndex >= maxIndex ){
+        this.currentIndex = this.opt.items;
+      }
+      this._updatePosition(true);
+      this._isAnimating = false;
+    };
   } else {
     this.currentIndex = Math.min(
       Math.max(this.currentIndex + step, 0),
-      this.slides.length - this.opt.item
+      this.slides.length - this.opt.items
     );
   }
-  console.log(this.currentIndex);
-  this.offset = `-${this.currentIndex * (100 / this.opt.item)}`;
+
+  this._updatePosition();
+};
+
+Slidezy.prototype._updatePosition = function (instant = false) {
+  this.track.style.transition = instant ? "none" : "transform .4s ease";
+  this.offset = `-${this.currentIndex * (100 / this.opt.items)}`;
   this.track.style.transform = `translateX(${this.offset}%)`;
 };
+// 4 5 6 1 2 3 4 5 6 1 2 3
+// 0 1 2 3 4 5 6 7 8 9 10 11
