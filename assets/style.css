@@ -1,48 +1,51 @@
-* {
-  margin: 0;
-  padding: 0;
-  /* box-sizing: border-box; */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* khi hiện nhiều ảnh thì không hiện thanh cuộn */
-.slidezy-wrapper{
+.slide-wrapper{
     position: relative;
     width: 100%;
     overflow: hidden;
 }
-
-.slidezy-track{
+.slide-track{
     display: flex;
+    transition: transform .4s ease;
 }
-.slidezy-slide{
-    /*
-        flex-basis: sẽ tính toán và chỉ hện ra 3 phần tử
-     */
+.slide-item{
     flex:  0 0 calc(100% / 3);
     text-align: center;
-    padding: 30px;
+    padding: 20px;
 }
 
-.slidezy-slide:nth-child(1){
-    background-color: orange;
+.slide-item:nth-child(1){
+    background: pink;
 }
-
-.slidezy-slide:nth-child(2){
-    background-color: pink;
+.slide-item:nth-child(2){
+    background: red;
 }
-.slidezy-slide:nth-child(3){
-    background-color: blueviolet;
+.slide-item:nth-child(3){
+    background: blueviolet;
 }
-
-.slidezy-prev,
-.slidezy-next{
+.slide-item:nth-child(4){
+    background: pink;
+}
+.slide-item:nth-child(5){
+    background: red;
+}
+.slide-item:nth-child(6){
+    background: blueviolet;
+}
+.pre-slide,
+.next-slide{
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
 }
-.slidezy-prev{
+.pre-slide{
     left: 10px;
 }
-.slidezy-next{
+.next-slide{
     right: 10px;
 }
