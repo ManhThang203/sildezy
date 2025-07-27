@@ -1,0 +1,48 @@
+* {
+  margin: 0;
+  padding: 0;
+  /* box-sizing: border-box; */
+}
+
+/* khi hiện nhiều ảnh thì không hiện thanh cuộn */
+.slidezy-wrapper{
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.slidezy-track{
+    display: flex;
+}
+.slidezy-slide{
+    /*
+        flex-basis: sẽ tính toán và chỉ hện ra 3 phần tử
+     */
+    flex:  0 0 calc(100% / 3);
+    text-align: center;
+    padding: 30px;
+}
+
+.slidezy-slide:nth-child(1){
+    background-color: orange;
+}
+
+.slidezy-slide:nth-child(2){
+    background-color: pink;
+}
+.slidezy-slide:nth-child(3){
+    background-color: blueviolet;
+}
+
+.slidezy-prev,
+.slidezy-next{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.slidezy-prev{
+    left: 10px;
+}
+.slidezy-next{
+    right: 10px;
+}

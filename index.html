@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SlideShow</title>
+    <!-- Link Reset Css -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
+      integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- Link Css -->
+    <link rel="stylesheet" href="./assets/reset.css" />
+    <link rel="stylesheet" href="./assets/style.css" />
+  </head>
+  <body>
+    <div id="my-slider" class="slidezy-wrapper">
+      <div>Slide 1</div>
+      <div>Slide 2</div>
+      <div>Slide 3</div>
+      <div>Slide 4</div>
+      <div>Slide 5</div>
+      <div>Slide 6</div>
+    </div>
+    <script src="./js/main.js"></script>
+    
+    <script>
+      const mySlider = new Slidezy("#my-slider");
+    </script>
+  </body>
+</html>
