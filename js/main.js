@@ -16,6 +16,9 @@ function Slidezy(select, option = {}) {
       prevButton: null,
       nextButton: null,
       slideBy: 1,
+      autoplay: false,
+      autoplayTimeout: 3000,
+      autoplayHoverPauseL: true,
     },
     option
   );
@@ -42,6 +45,34 @@ Slidezy.prototype._init = function () {
   if (this.opt.nav && this.showNav) {
     this._creatNav();
   }
+
+  if (this.opt.autoplay) {
+    this._startAutoplay();
+
+    if (this.opt.autoplayHoverPauseL) {
+      this.container.onmouseenter = () => {
+        this._stopAutoplay();
+      };
+      this.container.onmouseleave = () => {
+        this._startAutoplay();
+      };
+    }
+  }
+};
+
+Slidezy.prototype._startAutoplay = function () {
+  if (this.autoplayTimer) return;
+
+  const slideBy = this._getSlideBy();
+
+  this.autoplayTimer = setInterval(() => {
+    this._moveSlide(slideBy);
+  }, this.opt.autoplayTimeout);
+};
+
+Slidezy.prototype._stopAutoplay = function () {
+  clearInterval(this.autoplayTimer);
+  this.autoplayTimer = null;
 };
 
 Slidezy.prototype._createContent = function () {
@@ -50,21 +81,21 @@ Slidezy.prototype._createContent = function () {
   this.container.appendChild(this.content);
 };
 
-Slidezy.prototype._getcloneCount = function(){
+Slidezy.prototype._getcloneCount = function () {
   const slideCount = this._getSlideCount();
-  
-  if(slideCount <= this.opt.items) return 0;
+
+  if (slideCount <= this.opt.items) return 0;
 
   const slideBy = this._getSlideBy();
   const cloneCount = slideBy + this.opt.items;
 
   return cloneCount > slideCount ? slideCount : cloneCount;
-}
+};
 
 Slidezy.prototype._creatTrack = function () {
   this.track = document.createElement("div");
   this.track.className = "slide-track";
- 
+
   const cloneCount = this._getcloneCount();
   console.log(cloneCount);
 
@@ -87,9 +118,9 @@ Slidezy.prototype._creatTrack = function () {
   this.content.appendChild(this.track);
 };
 
-Slidezy.prototype._getSlideBy = function(){
+Slidezy.prototype._getSlideBy = function () {
   return this.opt.slideBy === "page" ? this.opt.items : this.opt.slideBy;
-}
+};
 
 Slidezy.prototype._createControl = function () {
   // Nút Prev Button
@@ -183,7 +214,7 @@ Slidezy.prototype._creatNav = function () {
 };
 
 Slidezy.prototype._updateNav = function () {
-  if(!this.showNav) return;
+  if (!this.showNav) return;
 
   let realIndex = this.currentIndex;
 
@@ -210,7 +241,6 @@ Slidezy.prototype._updatePosition = function (instant = false) {
     this._updateNav();
   }
 };
-
 
 // 4 5 6 1 2 3 4 5 6 1 2 3
 // 0 1 2 3 4 5 6 7 8 9 10 11
