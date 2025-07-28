@@ -19,9 +19,11 @@ function Slidezy(select, option = {}) {
     },
     option
   );
-  this.slides = Array.from(this.container.children);
+  this.originalSlides = Array.from(this.container.children);
 
-  this.currentIndex = this.opt.loop ? this.opt.items : 0;
+  this.slides = this.originalSlides.slice(0);
+
+  this.currentIndex = this.opt.loop ? this._getcloneCount() : 0;
   this._init();
   this._updatePosition();
 }
@@ -31,11 +33,13 @@ Slidezy.prototype._init = function () {
 
   this._createContent();
   this._creatTrack();
-  if (this.opt.control) {
+
+  this.showNav = this._getSlideCount() > this.opt.items;
+  if (this.opt.control && this.showNav) {
     this._createControl();
   }
 
-  if (this.opt.nav) {
+  if (this.opt.nav && this.showNav) {
     this._creatNav();
   }
 };
@@ -46,16 +50,30 @@ Slidezy.prototype._createContent = function () {
   this.container.appendChild(this.content);
 };
 
+Slidezy.prototype._getcloneCount = function(){
+  const slideCount = this._getSlideCount();
+  
+  if(slideCount <= this.opt.items) return 0;
+
+  const slideBy = this._getSlideBy();
+  const cloneCount = slideBy + this.opt.items;
+
+  return cloneCount > slideCount ? slideCount : cloneCount;
+}
+
 Slidezy.prototype._creatTrack = function () {
   this.track = document.createElement("div");
   this.track.className = "slide-track";
+ 
+  const cloneCount = this._getcloneCount();
+  console.log(cloneCount);
 
-  if (this.opt.loop) {
+  if (this.opt.loop && cloneCount > 0) {
     const cloneHead = this.slides
-      .slice(-this.opt.items)
+      .slice(-cloneCount)
       .map((node) => node.cloneNode(true));
     const cloneTail = this.slides
-      .slice(0, this.opt.items)
+      .slice(0, cloneCount)
       .map((node) => node.cloneNode(true));
 
     this.slides = cloneHead.concat(this.slides.concat(cloneTail));
@@ -68,6 +86,10 @@ Slidezy.prototype._creatTrack = function () {
   });
   this.content.appendChild(this.track);
 };
+
+Slidezy.prototype._getSlideBy = function(){
+  return this.opt.slideBy === "page" ? this.opt.items : this.opt.slideBy;
+}
 
 Slidezy.prototype._createControl = function () {
   // Nút Prev Button
@@ -94,10 +116,9 @@ Slidezy.prototype._createControl = function () {
     this.content.append(this.nextBtn);
   }
 
-  const stepSize =
-    this.opt.slideBy === "page" ? this.opt.items : this.opt.slideBy;
-  this.preBtn.onclick = () => this._moveSlide(-stepSize);
-  this.nextBtn.onclick = () => this._moveSlide(stepSize);
+  const slideBy = this._getSlideBy();
+  this.preBtn.onclick = () => this._moveSlide(-slideBy);
+  this.nextBtn.onclick = () => this._moveSlide(slideBy);
 };
 
 Slidezy.prototype._moveSlide = function (step) {
@@ -110,13 +131,13 @@ Slidezy.prototype._moveSlide = function (step) {
 
   setTimeout(() => {
     if (this.opt.loop) {
-      if (this.currentIndex <= this.opt.items) {
-        const slideCouter = this._getSlideCount();
+      const slideCouter = this._getSlideCount();
 
+      if (this.currentIndex <= this._getcloneCount()) {
         this.currentIndex += slideCouter;
         this._updatePosition(true);
-      } else if (this.currentIndex >= maxIndex) {
-        this.currentIndex = this.opt.items;
+      } else if (this.currentIndex >= slideCouter) {
+        this.currentIndex -= slideCouter;
         this._updatePosition(true);
       }
     }
@@ -127,7 +148,7 @@ Slidezy.prototype._moveSlide = function (step) {
 };
 
 Slidezy.prototype._getSlideCount = function () {
-  return this.slides.length - (this.opt.loop ? this.opt.items * 2 : 0);
+  return this.originalSlides.length;
 };
 
 Slidezy.prototype._creatNav = function () {
@@ -150,7 +171,7 @@ Slidezy.prototype._creatNav = function () {
 
     dot.onclick = () => {
       this.currentIndex = this.opt.loop
-        ? i * this.opt.items + this.opt.items
+        ? i * this.opt.items + this._getcloneCount()
         : i * this.opt.items;
       this._updatePosition();
     };
@@ -162,11 +183,13 @@ Slidezy.prototype._creatNav = function () {
 };
 
 Slidezy.prototype._updateNav = function () {
+  if(!this.showNav) return;
+
   let realIndex = this.currentIndex;
 
   if (this.opt.loop) {
-    const slideCount = this.slides.length - this.opt.items * 2;
-    realIndex = (this.currentIndex - this.opt.items + slideCount) % slideCount;
+    const slideBy = this._getSlideCount();
+    realIndex = (this.currentIndex - this._getcloneCount() + slideBy) % slideBy;
   }
 
   const pageIndex = Math.floor(realIndex / this.opt.items);
@@ -187,5 +210,7 @@ Slidezy.prototype._updatePosition = function (instant = false) {
     this._updateNav();
   }
 };
+
+
 // 4 5 6 1 2 3 4 5 6 1 2 3
 // 0 1 2 3 4 5 6 7 8 9 10 11
